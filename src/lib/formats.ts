@@ -75,6 +75,11 @@ export const ACCEPTED_MIME_TYPES = [
   "image/bmp",
 ].join(",");
 
+/** Normalize "jpg" alias to canonical "jpeg" key */
+export function normalizeFormat(format: string): string {
+  return format === "jpg" ? "jpeg" : format;
+}
+
 /** Derive the output filename from the original file + chosen format */
 export function buildOutputFilename(originalName: string, format: OutputFormat): string {
   const dot = originalName.lastIndexOf(".");

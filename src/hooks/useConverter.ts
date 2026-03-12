@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { convertImage } from "@/lib/conversion";
 import { buildOutputFilename } from "@/lib/formats";
@@ -16,6 +16,8 @@ const MAX_CONCURRENT = 3;
 
 export function useConverter(defaultFormat: OutputFormat = "webp") {
   const [jobs, setJobs] = useState<ConversionJob[]>([]);
+  const jobsRef = useRef(jobs);
+  jobsRef.current = jobs;
   const [outputFormat, setOutputFormat] = useState<OutputFormat>(defaultFormat);
   const [quality, setQuality] = useState(85);
 
@@ -42,7 +44,7 @@ export function useConverter(defaultFormat: OutputFormat = "webp") {
   }, []);
 
   const convertAll = useCallback(async () => {
-    const pending = jobs.filter((j) => j.status === "idle" || j.status === "error");
+    const pending = jobsRef.current.filter((j) => j.status === "idle" || j.status === "error");
     if (pending.length === 0) return;
 
     // Mark all pending as converting
@@ -87,7 +89,7 @@ export function useConverter(defaultFormat: OutputFormat = "webp") {
     }
 
     await Promise.all(workers.map(() => processNext()));
-  }, [jobs, outputFormat, quality]);
+  }, [outputFormat, quality]);
 
   const doneJobs = jobs.filter((j) => j.status === "done");
   const isConverting = jobs.some((j) => j.status === "converting");

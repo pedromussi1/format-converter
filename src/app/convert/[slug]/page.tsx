@@ -4,36 +4,21 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ConverterTool } from "@/components/converter/ConverterTool";
 import { AdSlot } from "@/components/ads/AdSlot";
-import { FORMAT_MAP } from "@/lib/formats";
+import { FORMAT_MAP, normalizeFormat } from "@/lib/formats";
+import { ALLOWED_OUTPUT_FORMATS } from "@/lib/validation";
 import type { OutputFormat } from "@/types";
 
-// All valid conversion pairs
-const VALID_FORMATS: OutputFormat[] = ["png", "jpeg", "webp", "avif", "gif", "tiff"];
+const ALL_INPUT_FORMAT_KEYS = [...ALLOWED_OUTPUT_FORMATS, "jpg", "bmp"] as const;
 
 function parseSlug(slug: string): { from: string; to: OutputFormat } | null {
   const match = slug.match(/^([a-z]+)-to-([a-z]+)$/);
   if (!match) return null;
   const [, from, to] = match;
-  const inputFormats = [...VALID_FORMATS, "jpg", "bmp"];
-  const normalizedFrom = from === "jpg" ? "jpeg" : from;
-  if (!inputFormats.includes(from) || !VALID_FORMATS.includes(to as OutputFormat)) return null;
+  const normalizedFrom = normalizeFormat(from);
+  if (!ALL_INPUT_FORMAT_KEYS.includes(from as never) || !ALLOWED_OUTPUT_FORMATS.includes(to as OutputFormat)) return null;
   if (normalizedFrom === to) return null;
   return { from: normalizedFrom, to: to as OutputFormat };
 }
-
-const FORMAT_LABELS: Record<string, string> = {
-  png: "PNG", jpeg: "JPEG", jpg: "JPEG", webp: "WebP",
-  avif: "AVIF", gif: "GIF", tiff: "TIFF", bmp: "BMP",
-};
-
-const FORMAT_DESCRIPTIONS: Record<string, string> = {
-  png: "lossless PNG — perfect for graphics and transparency",
-  jpeg: "JPEG — the universal format for photographs",
-  webp: "WebP — modern format with 25–35% better compression than JPEG",
-  avif: "AVIF — next-generation format with up to 50% better compression than JPEG",
-  gif: "GIF — classic format supporting simple animation",
-  tiff: "TIFF — professional lossless format for print and photography",
-};
 
 const COMPRESSION_TIPS: Record<string, string> = {
   webp: "WebP typically reduces file size by 25–35% compared to JPEG at the same visual quality.",
@@ -46,10 +31,9 @@ const COMPRESSION_TIPS: Record<string, string> = {
 
 export async function generateStaticParams() {
   const pairs: { slug: string }[] = [];
-  for (const from of [...VALID_FORMATS, "jpg", "bmp"]) {
-    for (const to of VALID_FORMATS) {
-      const normalizedFrom = from === "jpg" ? "jpeg" : from;
-      if (normalizedFrom !== to) {
+  for (const from of ALL_INPUT_FORMAT_KEYS) {
+    for (const to of ALLOWED_OUTPUT_FORMATS) {
+      if (normalizeFormat(from) !== to) {
         pairs.push({ slug: `${from}-to-${to}` });
       }
     }
@@ -66,7 +50,7 @@ export async function generateMetadata({
   const parsed = parseSlug(slug);
   if (!parsed) return { title: "Not Found" };
 
-  const fromLabel = FORMAT_LABELS[parsed.from] ?? parsed.from.toUpperCase();
+  const fromLabel = FORMAT_MAP[parsed.from]?.label ?? parsed.from.toUpperCase();
   const toLabel = FORMAT_MAP[parsed.to]?.label ?? parsed.to.toUpperCase();
 
   return {
@@ -88,15 +72,15 @@ export default async function ConvertPage({
   const parsed = parseSlug(slug);
   if (!parsed) notFound();
 
-  const fromLabel = FORMAT_LABELS[parsed.from] ?? parsed.from.toUpperCase();
+  const fromLabel = FORMAT_MAP[parsed.from]?.label ?? parsed.from.toUpperCase();
   const toLabel = FORMAT_MAP[parsed.to]?.label ?? parsed.to.toUpperCase();
   const toInfo = FORMAT_MAP[parsed.to];
 
   // Related conversions (same output format, different inputs)
-  const related = VALID_FORMATS
+  const related = ALLOWED_OUTPUT_FORMATS
     .filter((f) => f !== parsed.to && f !== parsed.from)
     .slice(0, 4)
-    .map((f) => ({ from: f, to: parsed.to, label: `${FORMAT_LABELS[f]} to ${toLabel}` }));
+    .map((f) => ({ from: f, to: parsed.to, label: `${FORMAT_MAP[f]?.label ?? f.toUpperCase()} to ${toLabel}` }));
 
   return (
     <div className="min-h-screen flex flex-col">
