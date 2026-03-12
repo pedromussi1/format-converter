@@ -51,11 +51,25 @@ const faqs = [
   },
 ];
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
+};
+
 export default function FaqPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 mx-auto w-full max-w-3xl px-4 py-12">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
         <div className="text-center mb-12">
           <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
             Frequently Asked Questions

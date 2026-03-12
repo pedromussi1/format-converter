@@ -1,18 +1,23 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AdSlot } from "@/components/ads/AdSlot";
 
-export function Header() {
-  return (
-    <header className="w-full border-b border-slate-200 bg-white">
-      <div className="mx-auto max-w-6xl px-4">
-        {/* Top ad banner */}
-        <div className="flex justify-center py-2">
-          <AdSlot slotId="header-banner" width={728} height={90} className="hidden sm:block" />
-          <AdSlot slotId="header-banner-mobile" width={320} height={50} className="block sm:hidden" />
-        </div>
+const navLinks = [
+  { href: "/", label: "Converter" },
+  { href: "/about", label: "Formats" },
+  { href: "/faq", label: "FAQ" },
+];
 
+export function Header() {
+  const pathname = usePathname();
+
+  return (
+    <header className="w-full border-b border-slate-200 bg-white/95 backdrop-blur-sm sticky top-0 z-50">
+      <div className="mx-auto max-w-6xl px-4">
         {/* Nav */}
-        <div className="flex items-center justify-between py-4">
+        <div className="flex items-center justify-between py-3">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-4 h-4">
@@ -24,11 +29,30 @@ export function Header() {
             </span>
           </Link>
 
-          <nav className="flex items-center gap-6 text-sm font-medium text-slate-600">
-            <Link href="/" className="hover:text-blue-600 transition-colors">Converter</Link>
-            <Link href="/about" className="hover:text-blue-600 transition-colors">Formats</Link>
-            <Link href="/faq" className="hover:text-blue-600 transition-colors">FAQ</Link>
+          <nav className="flex items-center gap-1 text-sm font-medium">
+            {navLinks.map(({ href, label }) => {
+              const active = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`px-3 py-1.5 rounded-lg transition-colors ${
+                    active
+                      ? "bg-blue-50 text-blue-700 font-semibold"
+                      : "text-slate-600 hover:text-blue-600 hover:bg-slate-50"
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
           </nav>
+        </div>
+
+        {/* Ad banner below nav */}
+        <div className="flex justify-center pb-2">
+          <AdSlot slotId="header-banner" width={728} height={90} className="hidden sm:block" />
+          <AdSlot slotId="header-banner-mobile" width={320} height={50} className="block sm:hidden" />
         </div>
       </div>
     </header>
