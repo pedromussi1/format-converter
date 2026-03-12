@@ -123,7 +123,7 @@ export default async function ConvertPage({
         {/* Converter + sidebar ad */}
         <div className="flex gap-8 items-start">
           <div className="flex-1 min-w-0">
-            <ConverterTool />
+            <ConverterTool defaultFormat={parsed.to} />
           </div>
           <aside className="hidden xl:block flex-shrink-0">
             <div className="sticky top-24">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useConverter } from "@/hooks/useConverter";
+import type { OutputFormat } from "@/types";
 import { DropZone } from "./DropZone";
 import { FormatSelector } from "./FormatSelector";
 import { QualitySlider } from "./QualitySlider";
@@ -9,7 +10,7 @@ import { ConvertButton } from "./ConvertButton";
 import { DownloadAll } from "./DownloadAll";
 import { AdSlot } from "@/components/ads/AdSlot";
 
-export function ConverterTool() {
+export function ConverterTool({ defaultFormat }: { defaultFormat?: OutputFormat }) {
   const {
     jobs,
     outputFormat,
@@ -22,7 +23,7 @@ export function ConverterTool() {
     setOutputFormat,
     setQuality,
     convertAll,
-  } = useConverter();
+  } = useConverter(defaultFormat);
 
   const hasFiles = jobs.length > 0;
   const allDone = hasFiles && jobs.every((j) => j.status === "done");

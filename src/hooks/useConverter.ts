@@ -14,9 +14,9 @@ function uid(): string {
 
 const MAX_CONCURRENT = 3;
 
-export function useConverter() {
+export function useConverter(defaultFormat: OutputFormat = "webp") {
   const [jobs, setJobs] = useState<ConversionJob[]>([]);
-  const [outputFormat, setOutputFormat] = useState<OutputFormat>("webp");
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>(defaultFormat);
   const [quality, setQuality] = useState(85);
 
   const addFiles = useCallback((files: File[]) => {
