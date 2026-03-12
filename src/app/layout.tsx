@@ -41,6 +41,10 @@ export const metadata: Metadata = {
     description: "Convert images between PNG, JPEG, WebP, AVIF, GIF and TIFF instantly.",
   },
   robots: { index: true, follow: true },
+  other: {
+    // AdSense site verification — must be in static HTML for Google's crawler
+    "google-adsense-account": "ca-pub-7940189312499670",
+  },
 };
 
 export default function RootLayout({
