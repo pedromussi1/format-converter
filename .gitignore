@@ -5,6 +5,9 @@
 /.next
 /out
 
+# TypeScript incremental build info
+*.tsbuildinfo
+
 # Environment variables — NEVER commit these
 .env.local
 .env*.local

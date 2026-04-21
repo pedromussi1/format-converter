@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -89,7 +90,7 @@ export default async function ConvertPage({
       <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-10">
         {/* Breadcrumb */}
         <nav className="text-xs text-slate-400 mb-6 flex items-center gap-1.5">
-          <a href="/" className="hover:text-blue-600 transition-colors">Home</a>
+          <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
           <span>/</span>
           <span className="text-slate-600 font-medium">Convert {fromLabel} to {toLabel}</span>
         </nav>
